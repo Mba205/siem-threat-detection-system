@@ -1,0 +1,38 @@
+[
+  {
+    "timestamp": "2024-11-01T08:15:22Z",
+    "user": "j.doe",
+    "src_ip": "203.0.113.45",
+    "action": "failure"
+  },
+  {
+    "timestamp": "2024-11-01T08:15:40Z",
+    "user": "j.doe",
+    "src_ip": "203.0.113.45",
+    "action": "failure"
+  },
+  {
+    "timestamp": "2024-11-01T08:16:02Z",
+    "user": "j.doe",
+    "src_ip": "203.0.113.45",
+    "action": "failure"
+  },
+  {
+    "timestamp": "2024-11-01T08:16:20Z",
+    "user": "j.doe",
+    "src_ip": "203.0.113.45",
+    "action": "failure"
+  },
+  {
+    "timestamp": "2024-11-01T08:16:45Z",
+    "user": "j.doe",
+    "src_ip": "203.0.113.45",
+    "action": "failure"
+  },
+  {
+    "timestamp": "2024-11-01T08:18:10Z",
+    "user": "j.doe",
+    "src_ip": "203.0.113.45",
+    "action": "success"
+  }
+]
