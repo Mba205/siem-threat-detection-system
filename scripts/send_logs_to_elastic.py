@@ -1,11 +1,13 @@
 import json
 import random
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
-# Paste your Elastic details here
+# ✅ Your Elastic details
 ELASTICSEARCH_ENDPOINT = "https://112f8d1130324b6b905c4661cc7980bd.us-east-2.aws.elastic-cloud.com:443"
 USERNAME = "elastic"
 PASSWORD = "ryTafWLU234NBrx7DS4f5fMF"
@@ -22,7 +24,7 @@ def generate_event():
     ip = random.choice(ips)
 
     return {
-        "@timestamp": datetime.utcnow().isoformat() + "Z",
+        "@timestamp": datetime.now(timezone.utc).isoformat(),  # ✅ fixes warning
         "event.category": "authentication",
         "event.action": "login",
         "event.outcome": outcome,
@@ -31,21 +33,38 @@ def generate_event():
         "message": f"Login {outcome} for user {user} from {ip}",
     }
 
+# ✅ Retry + backoff so timeouts don't kill the script
+session = requests.Session()
+retries = Retry(
+    total=20,
+    connect=20,
+    read=20,
+    backoff_factor=1.2,
+    status_forcelist=[429, 500, 502, 503, 504],
+    allowed_methods=["POST"],
+)
+session.mount("https://", HTTPAdapter(max_retries=retries))
+
 while True:
     event = generate_event()
+    try:
+        r = session.post(
+            INGEST_URL,
+            auth=(USERNAME, PASSWORD),
+            headers={"Content-Type": "application/json"},
+            data=json.dumps(event),
+            timeout=45,  # ✅ longer timeout
+        )
 
-    r = requests.post(
-        INGEST_URL,
-        auth=(USERNAME, PASSWORD),
-        headers={"Content-Type": "application/json"},
-        data=json.dumps(event),
-        timeout=10,
-    )
+        if 200 <= r.status_code < 300:
+            print("Sent:", event["event.outcome"], event["user.name"], event["source.ip"])
+        else:
+            print("FAILED:", r.status_code, r.text)
+            time.sleep(5)
 
-    if 200 <= r.status_code < 300:
-        print("Sent:", event["event.outcome"], event["user.name"], event["source.ip"])
-    else:
-        print("FAILED:", r.status_code, r.text)
-        break
+    except requests.exceptions.RequestException as e:
+        # ✅ Handles handshake timeouts + read timeouts without crashing
+        print("Network hiccup (retrying):", e)
+        time.sleep(5)
 
     time.sleep(2)
