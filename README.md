@@ -2,7 +2,7 @@
 
 ## 1. Overview
 
-This project demonstrates a **Security Information and Event Management (SIEM) Threat Detection System** focused on identifying suspicious authentication and remote access activity. The project is designed to showcase practical SIEM workflows, threat detection logic, and security analysis using a combination of **Splunk**, **Python**, and detection best practices.
+This project demonstrates a **Security Information and Event Management (SIEM) Threat Detection System** focused on identifying suspicious authentication and remote access activity. The project is designed to showcase practical SIEM workflows, threat detection logic, and security analysis using a combination of **Elastic Cloud**, **Python**, and detection best practices.
 
 The system focuses on **realistic SOC use cases** rather than large-scale infrastructure, emphasizing detection logic, alerting, and response.
 
